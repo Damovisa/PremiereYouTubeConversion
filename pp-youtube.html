@@ -1,0 +1,60 @@
+<html>
+
+<head>
+    <title>Premiere Marker to YouTube Chapter conversion</title>
+    <style>
+        .flex-container {
+            display: flex;
+        }
+
+        .flex-child {
+            flex: 1;
+        }
+
+        .flex-child:first-child {
+            margin-right: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Premiere Marker to YouTube Chapter conversion</h1>
+    <div class="flex-container">
+
+        <div class="flex-child magenta">
+            <h2>Premiere:</h2>
+            <textarea id="input" rows="10"></textarea>
+        </div>
+
+        <div class="flex-child green">
+            <h2>YouTube:</h2>
+            <textarea id="output" rows="10"></textarea>
+        </div>
+    </div>
+    <input type="checkbox" id="firstline"></checkbox><label for="firstline">Remove first line</label>
+
+    <script>
+        function parsetiming(str) {
+            newstr = str.trim();
+            split = newstr.split(/\r?\n/);
+            if (firstline.checked) split.shift();
+            newsplit = []
+            startindex = split[0].indexOf('\t') + 3
+            split.forEach(s => {
+                ns = s.substring(startindex, startindex + 8).trimEnd() + ' ' + s.substring(startindex + 14);
+                newsplit.push(ns.trimEnd())
+            });
+            newstr = newsplit.join('\n');
+            return newstr;
+        }
+
+        input.oninput = function () {
+            output.innerHTML = parsetiming(input.value);
+        }
+        firstline.oninput = function () {
+            output.innerHTML = parsetiming(input.value);
+        }
+    </script>
+</body>
+
+</html>
