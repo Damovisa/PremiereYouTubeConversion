@@ -3,17 +3,31 @@
 <head>
     <title>Premiere Marker to YouTube Chapter conversion</title>
     <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            color: #222;
+            line-height: 1.2rem;
+            padding: 5;
+        }
+
         .flex-container {
             display: flex;
         }
+
         .flex-child {
             flex: 1;
         }
+
         .flex-child:first-child {
             margin-right: 20px;
         }
+
         .flex-child textarea {
             width: 100%;
+        }
+        .notes {
+            font-style:italic;
+            font-size: smaller;
         }
     </style>
 </head>
@@ -21,10 +35,12 @@
 <body>
     <h1>Premiere Marker to YouTube Chapter conversion</h1>
     <p>In Premiere Pro, export your markers to text
-        (File &gt; Export &gt; Markers).<br/>
-        Paste the results in the left text area.</br/>
-        If you've included the headings, check the box to remove the first line. </p>
-    <p style="font-style:italic;">Note: Make sure you have a marker at 0:00, and you're using the Comments rather than the marker name.</p>
+        (File &gt; Export &gt; Markers).<br />
+        Paste the results in the left text area.</br />
+        You should then be able to copy the contents on the right directly into your YouTube video description.</p>
+    <p class="notes">Notes: The tool will attempt to remove headings and insert a 00:00 marker if you don't
+        have one (YouTube requires it)<br />
+        If the text isn't in the expected format, the tool will probably fail spectacularly. 🤷‍♀️</p>
     <div class="flex-container">
 
         <div class="flex-child magenta">
@@ -37,19 +53,29 @@
             <textarea id="output" rows="20"></textarea>
         </div>
     </div>
-    <input type="checkbox" id="firstline"></checkbox><label for="firstline">Remove first line</label>
 
     <script>
         function parsetiming(str) {
             newstr = str.trim();
+            // split by new line
             split = newstr.split(/\r?\n/);
-            if (firstline.checked) split.shift();
+            // remove headings if they exist
+            if (split[0].startsWith('Asset')) split.shift();
+
             newsplit = []
             startindex = split[0].indexOf('\t') + 3
+
+            // Add a zero marker if there isn't one
+            pushZero = !split[0].substring(startindex).startsWith('00:00:00');
+
+            // reformat each line
             split.forEach(s => {
                 ns = s.substring(startindex, startindex + 8).trimEnd() + ' ' + s.substring(startindex + 14);
                 newsplit.push(ns.trimEnd())
             });
+            // add a zero marker if needed
+            if (pushZero) newsplit.unshift('00:00:00 Beginning');
+            
             newstr = newsplit.join('\n');
             return newstr;
         }
